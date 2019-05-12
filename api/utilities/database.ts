@@ -2,23 +2,21 @@
 import * as mongoose from 'mongoose';
 import * as Bluebird from 'bluebird';
 
-
 // Use bluebird promises in lieu of mongoose promises throughout application.
 (mongoose as any).Promise = Bluebird;
-
 
 export function connectToMongoDB() {
 
 	const dbUri = 'mongodb://localhost:27017/shoplist';
 
 	mongoose.connect(dbUri, {
-		useMongoClient: true
+		useMongoClient: true,
 	});
 
 	mongoose.set('debug', true);
 
 	mongoose.connection.on('connected', () => {
-		console.log('Mongoose connected to ' + dbUri);
+		console.log(`Mongoose connected to ${dbUri}`);
 	});
 
 	mongoose.connection.on('disconnected', () => {
@@ -26,7 +24,7 @@ export function connectToMongoDB() {
 	});
 
 	mongoose.connection.on('error', err => {
-		console.log('Mongoose connection error: ' + err);
+		console.log(`Mongoose connection error: ${err}`);
 	});
 
 // ADDITIONAL PROCESS EVENTS FOR UNIX MACHINES ONLY:

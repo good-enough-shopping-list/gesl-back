@@ -3,18 +3,14 @@ import * as passport from 'passport';
 import { User } from '../models/user-model';
 import * as passportLocal from 'passport-local';
 
-
 const LocalStrategy = passportLocal.Strategy;
-
 
 passport.use(new LocalStrategy(	{
 
 	// Strategy is based on username & password.  Substitute email for username.
 	usernameField: 'user[email]',
 	passwordField: 'user[password]'},
-
-	(email, password, done) => {
-
+		                              (email, password, done) => {
 		User
 			.findOne( {email})
 			.then(user => {

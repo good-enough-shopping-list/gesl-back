@@ -3,7 +3,8 @@
   "version": "0.0.0",
   "main": "app.ts",
   "scripts": {
-    "dev": "nodemon --exec \"ts-node\" ./app.ts"
+    "dev": "nodemon --exec \"ts-node\" ./app.ts",
+    "lint-fix": "tslint --fix api/*.ts -t verbose"
   },
   "bugs": {
     "url": "https://"
@@ -33,6 +34,8 @@
     "passport-local": "^1.0.0",
     "slugify": "^1.2.1",
     "ts-node": "^3.3.0",
+    "tslint": "^5.16.0",
+    "tslint-config-airbnb": "^5.11.1",
     "typescript": "^2.5.2"
   }
 }

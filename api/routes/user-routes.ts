@@ -6,37 +6,29 @@ import { JWTRequest } from '../interfaces/requests-interface';
 
 const router: Router = Router();
 
-
 /**
  * GET /api/user
  */
 router.get('/', authentication.required, (req: JWTRequest, res: Response, next: NextFunction) => {
-
 		User
 			.findById(req.payload.id)
 			.then((user: IUserModel) => {
 					res.status(200).json({user: user.formatAsUserJSON()});
-				}
-			)
+				})
 			.catch(next);
-
-	}
+	},
 );
-
 
 /**
  * PUT /api/user
  */
 router.put('/', authentication.required, (req: JWTRequest, res: Response, next: NextFunction) => {
-
 		User
 			.findById(req.payload.id)
 			.then((user: IUserModel) => {
-
 				if (!user) {
 					return res.sendStatus(401);
 				}
-
 				if (typeof req.body.user.email !== 'undefined' ) {
 					user.email = req.body.user.email;
 				}
@@ -52,15 +44,12 @@ router.put('/', authentication.required, (req: JWTRequest, res: Response, next: 
 				if (typeof req.body.user.bio !== 'undefined') {
 					user.bio = req.body.user.bio;
 				}
-
 				return user.save().then( () => {
 					return res.json({user: user.formatAsUserJSON()});
 				});
 			})
 			.catch(next);
-	}
-
+	},
 );
-
 
 export const UserRoutes: Router = router;

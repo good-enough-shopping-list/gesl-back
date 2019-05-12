@@ -6,22 +6,21 @@ import { ProfileRequest } from '../interfaces/requests-interface';
 
 const router: Router = Router();
 
-
 /**
  * PARAM :username
  */
-router.param('username', (req: ProfileRequest, res: Response, next: NextFunction, username: string) => {
+router
+	.param('username', (req: ProfileRequest, res: Response, next: NextFunction, username: string) => {
 	User.findOne({username}).then( (user: IUserModel) => {
 			req.profile = user;
 			return next();
 		}).catch(next);
 });
 
-
 /**
  * GET /api/profiles/:username
  */
-router.get('/:username', authentication.optional,	(req: ProfileRequest, res: Response, next: NextFunction) => {
+router.get('/:username', authentication.optional, (req: ProfileRequest, res: Response, next: NextFunction) => {
 	if (req.payload) {
 		User.findById(req.payload.id).then( (user: IUserModel) => {
 				 res.status(200).json({profile: req.profile.formatAsProfileJSON(user)});

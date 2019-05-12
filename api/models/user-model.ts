@@ -1,10 +1,9 @@
 
-import { Document, Schema, Model, model } from 'mongoose';
-import { IUser } from '../interfaces/user-interface';
-import * as jwt from 'jsonwebtoken';
-import { jwtSecret } from '../utilities/authentication';
 import * as crypto from 'crypto';
-
+import * as jwt from 'jsonwebtoken';
+import { Document, Model, model, Schema } from 'mongoose';
+import { IUser } from '../interfaces/user-interface';
+import { jwtSecret } from '../utilities/authentication';
 
 export interface IUserModel extends IUser, Document {
 	token?: string;
@@ -28,11 +27,10 @@ const UserSchema = new Schema({
 	image: String,
 	following: [{ type: Schema.Types.ObjectId, ref: 'User' }],
 	hash: String,
-	salt: String
-}, {timestamps: true});
+	salt: String,
+},                            {timestamps: true});
 
-
-UserSchema.methods.generateJWT = function(): string {
+UserSchema.methods.generateJWT = function (): string {
 	const today = new Date();
 	const exp = new Date(today);
 	exp.setDate(today.getDate() + 60);
@@ -40,63 +38,55 @@ UserSchema.methods.generateJWT = function(): string {
 	return jwt.sign({
 		id: this._id,
 		username: this.username,
-		exp: exp.getTime() / 1000
-	}, jwtSecret);
+		exp: exp.getTime() / 1000,
+	},              jwtSecret);
 };
 
-
-UserSchema.methods.formatAsUserJSON = function() {
+UserSchema.methods.formatAsUserJSON = function () {
 	return {
 		username: this.username,
 		email: this.email,
 		token: this.generateJWT(),
 		bio: this.bio,
-		image: this.image
+		image: this.image,
 	};
 };
 
-
-UserSchema.methods.setPassword = function(password: string): void {
+UserSchema.methods.setPassword = function (password: string): void {
 	this.salt = crypto.randomBytes(16).toString('hex');
 	this.hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
 };
 
-
-UserSchema.methods.passwordIsValid = function(password: string): boolean {
+UserSchema.methods.passwordIsValid = function (password: string): boolean {
 	const hash = crypto.pbkdf2Sync(password, this.salt, 10000, 512, 'sha512').toString('hex');
 	return hash === this.hash;
 };
 
-
-UserSchema.methods.formatAsProfileJSON = function(user: IUserModel) {
+UserSchema.methods.formatAsProfileJSON = function (user: IUserModel) {
 	return {
 		username: this.username,
 		bio: this.bio,
 		image: this.image || 'https://avatars3.githubusercontent.com/u/10101729?s=460&v=4',
-		following: user ? user.isFollowing(this._id) : false
+		following: user ? user.isFollowing(this._id) : false,
 	};
 };
 
-
-UserSchema.methods.isFollowing = function(id: Schema.Types.ObjectId): boolean {
+UserSchema.methods.isFollowing = function (id: Schema.Types.ObjectId): boolean {
 	return this.following.some( (followingId: Schema.Types.ObjectId) => {
 		return followingId.toString() === id.toString();
 	});
 };
 
-
-UserSchema.methods.follow = function(id: Schema.Types.ObjectId) {
+UserSchema.methods.follow = function (id: Schema.Types.ObjectId) {
 	if (this.following.indexOf(id) === -1) {
 		this.following.push(id);
 	}
 	return this.save();
 };
 
-
-UserSchema.methods.unfollow = function(id: Schema.Types.ObjectId) {
+UserSchema.methods.unfollow = function (id: Schema.Types.ObjectId) {
 	this.following.remove(id);
 	return this.save();
 };
-
 
 export const User: Model<IUserModel> = model<IUserModel>('User', UserSchema);

@@ -6,7 +6,6 @@ export interface IUser {
 	image?: string;
 }
 
-
 export interface IProfile {
 	username: string;
 	bio: string;
